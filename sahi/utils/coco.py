@@ -118,13 +118,13 @@ class CocoAnnotation:
     def from_coco_annotation_dict(cls, annotation_dict: Dict, category_name: Optional[str] = None):
         """
         Creates CocoAnnotation object from category name and COCO formatted
-        annotation dict (with fields "bbox", "segmentation", "category_id").
+        annotation dict (with fields "bbox", "segmentation", "category_id", "attributes).
 
         Args:
             category_name: str
                 Category name of the annotation
             annotation_dict: dict
-                COCO formatted annotation dict (with fields "bbox", "segmentation", "category_id")
+                COCO formatted annotation dict (with fields "bbox", "segmentation", "category_id", "attributes)
         """
         if annotation_dict.__contains__("segmentation") and not isinstance(annotation_dict["segmentation"], list):
             has_rle_segmentation = True
@@ -145,10 +145,12 @@ class CocoAnnotation:
                 category_name=category_name,
             )
         else:
+            print(annotation_dict)
             return cls(
                 bbox=annotation_dict["bbox"],
                 category_id=annotation_dict["category_id"],
                 category_name=category_name,
+                attributes=annotation_dict["attributes"]
             )
 
     @classmethod
@@ -185,6 +187,7 @@ class CocoAnnotation:
         category_id=None,
         category_name=None,
         image_id=None,
+        attributes=None,
         iscrowd=0,
     ):
         """
@@ -229,6 +232,13 @@ class CocoAnnotation:
             category_name=self.category_name,
             iscrowd=self.iscrowd,
         )
+
+    @property
+    def attributes(self):
+        """
+        Returns bbox attributes
+        """
+        return self.attributes
 
     @property
     def area(self):
@@ -309,6 +319,7 @@ class CocoAnnotation:
             "segmentation": self.segmentation,
             "iscrowd": self.iscrowd,
             "area": self.area,
+            "attributes": self.attributes
         }
 
     def serialize(self):
@@ -322,6 +333,7 @@ class CocoAnnotation:
     category_id: {self.category_id},
     category_name: {self.category_name},
     iscrowd: {self.iscrowd},
+    attributes: {self.attributes},
     area: {self.area}>"""
 
 
@@ -357,7 +369,7 @@ class CocoPrediction(CocoAnnotation):
         )
 
     @classmethod
-    def from_coco_bbox(cls, bbox, category_id, category_name, score, iscrowd=0, image_id=None):
+    def from_coco_bbox(cls, bbox, category_id, category_name, score, attributes, iscrowd=0, image_id=None):
         """
         Creates CocoAnnotation object using coco bbox
 
@@ -380,10 +392,11 @@ class CocoPrediction(CocoAnnotation):
             score=score,
             iscrowd=iscrowd,
             image_id=image_id,
+            attributes=attributes
         )
 
     @classmethod
-    def from_coco_annotation_dict(cls, category_name, annotation_dict, score, image_id=None):
+    def from_coco_annotation_dict(cls, category_name, annotation_dict, score, attributes, image_id=None):
         """
         Creates CocoAnnotation object from category name and COCO formatted
         annotation dict (with fields "bbox", "segmentation", "category_id").
@@ -410,6 +423,7 @@ class CocoPrediction(CocoAnnotation):
                 category_id=annotation_dict["category_id"],
                 category_name=category_name,
                 image_id=image_id,
+                attributes=attributes
             )
 
     def __init__(
@@ -461,6 +475,7 @@ class CocoPrediction(CocoAnnotation):
             "segmentation": self.segmentation,
             "iscrowd": self.iscrowd,
             "area": self.area,
+            "attributes": self.attributes
         }
 
     def serialize(self):
@@ -475,6 +490,7 @@ class CocoPrediction(CocoAnnotation):
     category_id: {self.category_id},
     category_name: {self.category_name},
     iscrowd: {self.iscrowd},
+    attributes: {self.attributes}
     area: {self.area}>"""
 
 
