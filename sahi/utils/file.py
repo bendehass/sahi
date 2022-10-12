@@ -37,6 +37,7 @@ def save_json(data, save_path):
     # create dir if not present
     Path(save_path).parent.mkdir(parents=True, exist_ok=True)
 
+    #print(data)
     # export as json
     with open(save_path, "w", encoding="utf-8") as outfile:
         json.dump(data, outfile, separators=(",", ":"), cls=NumpyEncoder)

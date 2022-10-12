@@ -127,7 +127,7 @@ class CocoAnnotation:
                 COCO formatted annotation dict (with fields "bbox", "segmentation", "category_id", "attributes)
         """
         if annotation_dict.__contains__("segmentation") and not isinstance(annotation_dict["segmentation"], list):
-            has_rle_segmentation = True
+            has_rle_segmentation = False
             logger.warning(
                 f"Segmentation annotation for id {annotation_dict['id']} is skipped since RLE segmentation format is not supported."
             )
@@ -143,6 +143,7 @@ class CocoAnnotation:
                 segmentation=annotation_dict["segmentation"],
                 category_id=annotation_dict["category_id"],
                 category_name=category_name,
+                attributes=annotation_dict["attributes"]
             )
         else:
             print(annotation_dict)
@@ -168,6 +169,7 @@ class CocoAnnotation:
         category_id: int,
         category_name: str,
         iscrowd: int,
+        attributes: dict
     ):
         """
         Creates CocoAnnotation object from ShapelyAnnotation object.
@@ -183,6 +185,7 @@ class CocoAnnotation:
             category_id=category_id,
             category_name=category_name,
             iscrowd=iscrowd,
+            attributes=attributes
         )
         coco_annotation._segmentation = shapely_annotation.to_coco_segmentation()
         coco_annotation._shapely_annotation = shapely_annotation
@@ -240,6 +243,7 @@ class CocoAnnotation:
             category_id=self.category_id,
             category_name=self.category_name,
             iscrowd=self.iscrowd,
+            attributes=self.attributes
         )
 
     @property
@@ -1914,8 +1918,10 @@ def create_coco_dict(images, categories, ignore_negative_samples=False, image_id
     annotation_id = 1
     coco_dict = dict(images=[], annotations=[], categories=categories)
     for coco_image in images:
+        print(coco_image)
         # get coco annotations
         coco_annotations = coco_image.annotations
+        print(coco_annotations)
         # get num annotations
         num_annotations = len(coco_annotations)
         # if ignore_negative_samples is True and no annotations, skip image
@@ -1942,6 +1948,7 @@ def create_coco_dict(images, categories, ignore_negative_samples=False, image_id
 
             # do the same for image annotations
             for coco_annotation in coco_annotations:
+                #print(coco_annotation)
                 # create coco annotation object
                 out_annotation = {
                     "iscrowd": 0,
@@ -1951,6 +1958,7 @@ def create_coco_dict(images, categories, ignore_negative_samples=False, image_id
                     "category_id": coco_annotation.category_id,
                     "id": annotation_id,
                     "area": coco_annotation.area,
+                    "attributes": coco_annotation.attributes 
                 }
                 coco_dict["annotations"].append(out_annotation)
                 # increment annotation id

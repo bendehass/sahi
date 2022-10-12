@@ -58,6 +58,7 @@ def slice(
             out_ext=".jpg",
             verbose=False,
         )
+        print(coco_dict)
         output_coco_annotation_file_path = os.path.join(output_dir, sliced_coco_name + ".json")
         save_json(coco_dict, output_coco_annotation_file_path)
         print(f"Sliced dataset for 'slice_size: {slice_size}' is exported to {output_dir}")
