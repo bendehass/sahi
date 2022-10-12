@@ -146,11 +146,19 @@ class CocoAnnotation:
             )
         else:
             print(annotation_dict)
-            return cls(
-                bbox=annotation_dict["bbox"],
-                category_id=annotation_dict["category_id"],
-                category_name=category_name,
-                attributes=annotation_dict["attributes"]
+            if "attributes" in annotation_dict:
+                return cls(
+                    bbox=annotation_dict["bbox"],
+                    category_id=annotation_dict["category_id"],
+                    category_name=category_name,
+                    attributes=annotation_dict["attributes"]
+            )
+            else:
+                return cls(
+                    bbox=annotation_dict["bbox"],
+                    category_id=annotation_dict["category_id"],
+                    category_name=category_name,
+                    attributes={}
             )
 
     @classmethod
@@ -214,6 +222,7 @@ class CocoAnnotation:
         bbox = [round(point) for point in bbox] if bbox else bbox
         self._category_id = category_id
         self._category_name = category_name
+        self._attributes = attributes
         self._image_id = image_id
         self._iscrowd = iscrowd
 
@@ -238,7 +247,8 @@ class CocoAnnotation:
         """
         Returns bbox attributes
         """
-        return self.attributes
+        
+        return self._attributes
 
     @property
     def area(self):
@@ -302,6 +312,12 @@ class CocoAnnotation:
         if not isinstance(n, str):
             raise Exception("category_name must be a string")
         self._category_name = n
+
+    @attributes.setter
+    def attributes(self, n):
+        if not isinstance(n, dict):
+            raise Exception("attributes must be a dict")
+        self._attributes = n
 
     @property
     def iscrowd(self):
